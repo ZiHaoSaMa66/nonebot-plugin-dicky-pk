@@ -30,6 +30,9 @@ KEYWORDS = {
     "friends_delete": ["取关牛子", "删除牛友", "删除朋友"],
     # help
     "help": ["牛子帮助"],
+    #toys
+    "toys_buy": ["牛子道具购买"],
+    "toys_use": ["牛子使用道具"],
 }
 
 VERSION = '2.6.5'
@@ -63,6 +66,7 @@ def message_processor(
     fuzzy_match: bool = False,
     impl_at_segment=None,
     impl_send_message=None,
+    **keyword_args,
 ):
     """
     main entry

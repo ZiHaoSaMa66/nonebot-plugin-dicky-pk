@@ -477,6 +477,107 @@ class DB_Farm:
     def update_user_data(data: dict):
         Sql_farm.update_single_data(data)
 
+class Sql_toys:
+    @staticmethod
+    def _sql_create_table():
+        return "create table if not exists `toys` (`qq` bigint, `toys_have_list` varchar(255), `zhencao_lock` integer, `used_zhencao_lock_qqid` bigint, `boost_toys_last_used_time` varchar(255), `toys_boost_times` integer, primary key (`qq`));"
+
+    @staticmethod
+    def _sql_insert_single_data():
+        return "insert into `toys` (`qq`, `toys_have_list`, `zhencao_lock`, `used_zhencao_lock_qqid`, `boost_toys_last_used_time`, `toys_boost_times`) values (:qq, :toys_have_list, :zhencao_lock, :used_zhencao_lock_qqid, :boost_toys_last_used_time, :toys_boost_times);"
+
+    @staticmethod
+    def _sql_select_single_data(qq: int):
+        return f"select * from `toys` where `qq` = {qq};"
+
+    @staticmethod
+    def _sql_batch_select_data(qqs: list):
+        return f"select * from `toys` where `qq` in {Sql.utils.tupleify(qqs)};"
+
+    @staticmethod
+    def _sql_update_single_data():
+        return "update `toys` set `toys_have_list` = :toys_have_list, `zhencao_lock` = :zhencao_lock, `used_zhencao_lock_qqid` = :used_zhencao_lock_qqid, `boost_toys_last_used_time` = :boost_toys_last_used_time, `toys_boost_times` = :toys_boost_times where `qq` = :qq;"
+
+    @staticmethod
+    def _sql_delete_single_data(qq: int):
+        return f"delete from `toys` where `qq` = {qq};"
+
+    @staticmethod
+    def _sql_check_table_exists():
+        return 'select count(*) from sqlite_master where type="table" and name="toys";'
+
+    @staticmethod
+    def deserialize(data: tuple):
+        return {
+            "qq": data[0],
+            "toys_have_list": data[1],
+            "zhencao_lock": data[2],
+            "used_zhencao_lock_qqid": data[3],
+            "boost_toys_last_used_time": data[4],
+            "toys_boost_times": data[5],
+        }
+
+    @classmethod
+    def select_signle_data(cls, qq: int):
+        sql_ins.cursor.execute(cls._sql_select_single_data(qq))
+        one = sql_ins.cursor.fetchone()
+        if one is None:
+            return None
+        return cls.deserialize(one)
+
+    @classmethod
+    def insert_single_data(cls, data: dict):
+        sql_ins.cursor.execute(cls._sql_insert_single_data(), data)
+        sql_ins.conn.commit()
+
+    @classmethod
+    def update_single_data(cls, data: dict):
+        sql_ins.cursor.execute(cls._sql_update_single_data(), data)
+        sql_ins.conn.commit()
+
+    @classmethod
+    def delete_single_data(cls, qq: int):
+        sql_ins.cursor.execute(cls._sql_delete_single_data(qq))
+        sql_ins.conn.commit()
+
+    @classmethod
+    def select_batch_data_by_qqs(cls, qqs: list):
+        sql_ins.cursor.execute(cls._sql_batch_select_data(qqs))
+        return [cls.deserialize(data) for data in sql_ins.cursor.fetchall()]
+
+class DB_Toys:
+    @staticmethod
+    def init_user_data(qq: int, at_qq: int = None):
+        for account in [qq, at_qq]:
+            if account is None:
+                continue
+            data = Sql_toys.select_signle_data(account)
+            if data is None:
+                Sql_toys.insert_single_data(
+                    {
+                        "qq": account,
+                        "toys_have_list": {f"toy_id_{i}": 0 for i in range(1,8)},
+                        # 按ID排序拥有的物品数
+                        "zhencao_lock": 0,
+                        # 是否被贞操锁定 0未锁定 1已锁定
+                        "used_zhencao_lock_qqid": 0,
+                        # 贞操锁使用人qq
+                        "boost_toys_last_used_time": 0,
+                        # 增益道具上次使用时间 默认使用后加成1day
+                        "toys_boost_times": 1,
+                        # 增益道具增益倍数
+                        
+                        
+                    }
+                )
+
+    @staticmethod
+    def get_user_data(qq: int):
+        return Sql_toys.select_signle_data(qq)
+
+    @staticmethod
+    def update_user_data(data: dict):
+        Sql_toys.update_single_data(data)
 
 class Sql_friends:
     @staticmethod
@@ -601,6 +702,8 @@ class Sql:
     sub_table_badge = Sql_badge()
     sub_table_farm = Sql_farm()
     sub_table_friends = Sql_friends()
+
+    sub_toys = Sql_toys()
 
     utils = Sql_utils()
 
