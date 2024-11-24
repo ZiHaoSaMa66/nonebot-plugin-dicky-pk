@@ -10,6 +10,8 @@ from .farm import FarmSystem
 from .friends import FriendsSystem
 from typing import Optional
 
+from .baka_fun import an_head_suo_me_run
+
 KEYWORDS = {
     "chinchin": ["牛子"],
     "pk": ["pk"],
@@ -30,6 +32,8 @@ KEYWORDS = {
     "friends_delete": ["取关牛子", "删除牛友", "删除朋友"],
     # help
     "help": ["牛子帮助"],
+    # baka_edit
+    "baka_antou":['按头suo我',"按头🔒我", "按头嗦我", "按头锁我"]
 }
 
 VERSION = '2.6.5'
@@ -228,6 +232,14 @@ def message_processor(
     # 牛子修炼：在修炼状态不能进行其他操作
     if is_current_planting:
         return eager_return()
+
+    # baka edit
+    # if '按头suo我' in message:
+    if match_func(KEYWORDS.get("baka_antou"), message):
+        back_msg = an_head_suo_me_run(qq,at_qq)
+        send_message(qq, group, back_msg)
+        return
+
 
     # 对别人的 (opera)
     if at_qq:
@@ -562,7 +574,7 @@ class Chinchin_me:
             DB.sub_db_badge.record_glue_plus_count(qq)
             # record record_glue_plus_length_total to qq
             DB.sub_db_badge.record_glue_plus_length_total(qq, plus_value)
-            message_arr = ["牛子对你的付出很满意吗，增加{}厘米".format(plus_value)]
+            message_arr = ["牛子对你的付出很满意，增加{}厘米".format(plus_value)]
             send_message(qq, group, join(message_arr, "\n"))
 
     @staticmethod

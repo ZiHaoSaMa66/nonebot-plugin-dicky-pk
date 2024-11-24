@@ -276,3 +276,26 @@ async def _():
     enablelist['all']  = False
     save_conf()
     await chinchin_disable.finish('牛子秘境已关闭.')
+
+chinchin_passive_suo = on_command(
+    '按头嗦我',
+    priority=15,
+    block=True,
+)
+
+# from .src.baka_fun import
+
+@chinchin_passive_suo.handle()
+async def _(event: MessageEvent, args: Message = CommandArg()):
+    
+    other_qq_id = None
+    
+    for segment in args:
+        if segment.type == "at":
+            other_qq_id = segment.data.get("qq")
+            break  # 只处理第一个@的用户
+    
+    if not other_qq_id:
+        return
+    
+    
