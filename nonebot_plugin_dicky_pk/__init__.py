@@ -39,6 +39,7 @@ usage: str = """
     牛子成就
     牛子仙境
     牛子修炼(牛子练功/牛子修仙)
+    互🔒(互嗦/互锁/互suo) @用户
 
 """.strip()
 
@@ -278,27 +279,16 @@ async def _():
     await chinchin_disable.finish('牛子秘境已关闭.')
 
 chinchin_passive_suo = on_command(
-    '按头嗦我',
-    aliases={"按头🔒我", "按头锁我", "按头suo我"},
+    '互🔒',
+    aliases={"互嗦", "互锁", "互suo",'69'},
     priority=15,
     block=True,
 )
 
-# from .src.baka_fun import
 
 @chinchin_passive_suo.handle()
-# async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 async def _(bot: Bot, event: GroupMessageEvent):
-    
-    # other_qq_id = None
-    
-    # for segment in args:
-    #     if segment.type == "at":
-    #         other_qq_id = segment.data.get("qq")
-    #         break  # 只处理第一个@的用户
-    
-    # if not other_qq_id:
-    #     return
-    
+
     dicky_run(KEYWORDS['baka_antou'][0], bot, event)
+    
     return
