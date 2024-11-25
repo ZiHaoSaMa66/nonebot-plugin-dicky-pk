@@ -255,8 +255,30 @@ baka_config = {
     # 被按头者判定成功后加长度的范围
     "an_tou_day_limit": 12,
     # 每日限制次数 超过次数限制 则进入冷却时间
+    
+    "fix_zero_can_pk_min_pk_length": 10, # 修复长度为0的玩家可以pk的最小pk长度
+    
 }
 
+def fix_zero_can_pk(qq_id) -> bool:
+    """
+    修复长度为0的玩家可以pk
+    - `qq_id`: QQ号
+    
+    - 返回`True` 则可以pk
+    - 返回`False` 则不可以pk
+    
+    """
+    user_data = DB.load_data(qq_id)
+
+    db_length = user_data.get("length") # type: ignore
+
+    min_length = baka_config["fix_zero_can_pk_min_pk_length"]
+
+    if db_length <= min_length:
+        return False
+    
+    return True
 
 def is_integer(number) -> bool:
     """判断是否为整数"""
@@ -303,13 +325,13 @@ def decide_roll_success(rate) -> bool:
     return True
 
 
-def roll_a_number(min_num, max_num) -> float:
-    '''
-    - 随机生成一个数字
-    (需要确保每次调用都不一样)
-    - `min_num`: 最小值
-    - `max_num`: 最大值
-    '''
+# def roll_a_number(min_num, max_num) -> float:
+#     '''
+#     - 随机生成一个数字
+#     (需要确保每次调用都不一样)
+#     - `min_num`: 最小值
+#     - `max_num`: 最大值
+#     '''
     
 
 def an_head_suo_me_run(cmd_runner_qqid, target_qqid) -> str:

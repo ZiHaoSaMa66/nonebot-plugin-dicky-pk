@@ -10,7 +10,7 @@ from .farm import FarmSystem
 from .friends import FriendsSystem
 from typing import Optional
 
-from .baka_fun import an_head_suo_me_run
+from .baka_fun import an_head_suo_me_run,fix_zero_can_pk
 
 KEYWORDS = {
     "chinchin": ["牛子"],
@@ -252,6 +252,12 @@ def message_processor(
 
         # pk别人
         if match_func(KEYWORDS.get("pk"), message):
+            
+            if not fix_zero_can_pk(qq):
+                msg_add = ["你的牛牛太短了，无法PK！"]
+                send_message(qq, group, join(msg_add, "\n"))
+                return
+            
             return Chinchin_with_target.entry_pk_with_target(ctx)
 
         # 🔒别人
