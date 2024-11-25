@@ -233,12 +233,6 @@ def message_processor(
     if is_current_planting:
         return eager_return()
 
-    # baka edit
-    # if '按头suo我' in message:
-    if match_func(KEYWORDS.get("baka_antou"), message):
-        back_msg = an_head_suo_me_run(qq,at_qq)
-        send_message(qq, group, back_msg)
-        return
 
 
     # 对别人的 (opera)
@@ -246,6 +240,14 @@ def message_processor(
         if not DB.is_registered(at_qq):
             message_arr = ["对方还没有牛子！"]
             send_message(qq, group, join(message_arr, "\n"))
+            return
+        
+        # baka edit
+        # if '按头suo我' in message:
+        if match_func(KEYWORDS.get("baka_antou"), message):
+            back_msg = an_head_suo_me_run(qq,at_qq)
+            msg_arr = [back_msg]
+            send_message(qq, group, join(msg_arr,"\n"))
             return
 
         # pk别人
