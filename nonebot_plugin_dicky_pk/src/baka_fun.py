@@ -149,10 +149,35 @@ class baka_json_db:
         now_time = datetime.datetime.now()
         time_obj = datetime.datetime.strptime(time_str, "%Y-%m-%d_%H:%M:%S")
 
+        # print('debug days=',(now_time - time_obj).days)
+
         if (now_time - time_obj).days > 0:
+            
             return True
 
         return False
+    
+    @staticmethod
+    def check_is_new_day(time_str: str) -> bool:
+        """
+        检查是否是新的一天
+        如果传入的时间小于今天0点则是新的一天
+        - `time_str`: 时间字符串
+        """
+        # 当前时间
+        now = datetime.datetime.now()
+        # 今天0点的时间
+        today_midnight = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
+        
+        # 解析传入的时间字符串
+        try:
+            input_time = datetime.datetime.strptime(time_str, '%Y-%m-%d_%H:%M:%S')
+        except ValueError:
+            raise ValueError("时间字符串格式不正确，应该是 'YYYY-MM-DD_HH:MM:SS'")
+
+        # 比较时间
+        return input_time < today_midnight
+        
 
     @staticmethod
     def compare_time_with_now_is_over_1_hour(time_str: str) -> bool:
@@ -191,7 +216,7 @@ class an_tou_db:
         dayily_suo_times = this_db_r("dayily_suo_times")
 
 
-        if dayily_suo_times is None:
+        if dayily_suo_times is None or last_time is None:
             # 如果无数据则初始化
             dayily_suo_times = 1
             this_db_w("dayily_suo_times", dayily_suo_times)
@@ -199,8 +224,9 @@ class an_tou_db:
 
             return False
         
-        if last_time and baka_db.compare_time_with_now_is_over_1_day(last_time):
+        if baka_db.check_is_new_day(last_time):
             # 到了新的一天刷新次数限制
+            # print("刷新次数限制")
             this_db_w("dayily_suo_times", 1)
             this_db_w("antou_last_time", baka_db.get_a_time_str())
             return False
